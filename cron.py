@@ -9,6 +9,7 @@ import logging
 import webapp2
 
 from google.appengine.api import mail
+from google.appengine.api import app_identity
 
 import model
 
@@ -18,7 +19,8 @@ class CronUpdateHandler(webapp2.RequestHandler):
     @classmethod
     def get_reply_address(cls, urlsafe):
         """Return update email reply address given supplied urlsafe string."""
-        return 'PIF <update+%s@piffer-updates.appspotmail.com>' % urlsafe
+        app_id = app_identity.get_application_id()
+        return 'PIF <update+%s@%s.appspotmail.com>' % (urlsafe, app_id)
 
     @classmethod
     def get_update_message(cls, team, to, sender, date):
@@ -68,7 +70,8 @@ class CronDigestHandler(webapp2.RequestHandler):
     def get_digest_message(cls, team, digest, date, to):
         """Sends update reminder email to subscriber."""
         day = "{:%b %d, %Y}".format(date)
-        reply_to = 'PIF <noreply@piffer-updates.appspotmail.com>'
+        app_id = app_identity.get_application_id()
+        reply_to = 'PIF <noreply@%s.appspotmail.com>' % app_id
         fields = dict(
             sender=reply_to,
             to=to,

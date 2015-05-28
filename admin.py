@@ -6,6 +6,7 @@ import webapp2
 
 from google.appengine.api import mail
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
+from google.appengine.api import app_identity
 
 import model
 
@@ -53,7 +54,8 @@ class AdminHandler(InboundMailHandler):
     @classmethod
     def get_subscription_msg(cls, to, report):
         """Returns EmailMessage for supplied recipient and report."""
-        reply_to = 'PIF <noreply@piffer-updates.appspotmail.com>'
+        app_id = app_identity.get_application_id()
+        reply_to = 'PIF <noreply@%s.appspotmail.com>' % app_id
         fields = dict(
             sender=reply_to,
             to=to,
