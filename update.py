@@ -14,6 +14,11 @@ from model import SubscriberUpdate
 class UpdateHandler(InboundMailHandler):
     """Handler for incoming update emails from subscribers."""
 
+    with open('config.yaml', 'r') as f:
+        doc = yaml.load(f);
+    
+    appname = doc["appname"]
+
     @classmethod
     def get_update(cls, body):
         """Process body to update lines starting with *, return as string."""
@@ -31,9 +36,11 @@ class UpdateHandler(InboundMailHandler):
             '[done]',
             '[Done]',
             '-----Original Message-----',
+            '________________________________________',
+            'From: %s' % cls.appname,
             'Sent from my iPhone',
-            'On Mon, {0:%b} {0.day}, {0:%Y} at 10:00 AM, PIF'.format(dt),
-            'On Mon, {0:%b} {0.day}, {0:%Y}, at 10:00 AM, PIF'.format(dt),
+            'On Mon, {0:%b} {0.day}, {0:%Y} at 10:00 AM, '.format(dt),
+            'On Mon, {0:%b} {0.day}, {0:%Y}, at 10:00 AM, '.format(dt),
             'On {0:%b} {0.day}, {0:%Y} 10:00 AM'.format(dt),
             'On {0:%b} {0.day}, {0:%Y}, at 10:00 AM'.format(dt),
             'Just reply with a few brief bullets starting with'

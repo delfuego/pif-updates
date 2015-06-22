@@ -7,6 +7,7 @@ import datetime
 import functools
 import logging
 import webapp2
+import yaml
 
 from google.appengine.api import mail
 from google.appengine.api import app_identity
@@ -16,11 +17,16 @@ import model
 
 class CronUpdateHandler(webapp2.RequestHandler):
 
+    with open('config.yaml', 'r') as f:
+        doc = yaml.load(f);
+    
+    appname = doc["appname"]
+
     @classmethod
     def get_reply_address(cls, urlsafe):
         """Return update email reply address given supplied urlsafe string."""
         app_id = app_identity.get_application_id()
-        return 'PIF <update+%s@%s.appspotmail.com>' % (urlsafe, app_id)
+        return '%s <update+%s@%s.appspotmail.com>' % (cls.appname, urlsafe, app_id)
 
     @classmethod
     def get_update_message(cls, team, to, sender, date):
@@ -35,7 +41,7 @@ class CronUpdateHandler(webapp2.RequestHandler):
             sender=sender,
             to=to,
             reply_to=sender,
-            subject='[PIF-update] Send %s updates - %s' % (team.upper(), day),
+            subject='[%s] Send %s updates - %s' % (cls.appname, team.upper(), day),
             body=header)
         return mail.EmailMessage(**fields)
 
@@ -71,12 +77,12 @@ class CronDigestHandler(webapp2.RequestHandler):
         """Sends update reminder email to subscriber."""
         day = "{:%b %d, %Y}".format(date)
         app_id = app_identity.get_application_id()
-        reply_to = 'PIF <noreply@%s.appspotmail.com>' % app_id
+        reply_to = '%s <noreply@%s.appspotmail.com>' % (cls.appname, app_id)
         fields = dict(
             sender=reply_to,
             to=to,
             reply_to=reply_to,
-            subject='[PIF-update] %s team updates - %s' % (team.upper(), day),
+            subject='[%s] %s team updates - %s' % (cls.appname, team.upper(), day),
             body=digest)
         return mail.EmailMessage(**fields)
 

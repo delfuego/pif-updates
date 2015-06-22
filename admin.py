@@ -3,6 +3,7 @@
 import email
 import logging
 import webapp2
+import yaml
 
 from google.appengine.api import mail
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
@@ -10,22 +11,20 @@ from google.appengine.api import app_identity
 
 import model
 
-
-_ADMINS = [
-    'daniel.hammer@gsa.gov',
-    'dan.s.hammer@gmail.com',
-    'michelle.m.hood@gmail.com'
-]
-
-
 class AdminHandler(InboundMailHandler):
     """Handler for subscription requests by admin."""
+    
+    with open('config.yaml', 'r') as f:
+        doc = yaml.load(f);
+    
+    appname = doc["appname"]
+    admins = doc["admins"]
 
     @classmethod
     def is_admin(cls, sender):
         """Return True if sender is an admin, otherwise return False."""
         name, mail = email.Utils.parseaddr(sender)
-        return mail.lower() in (email.lower() for email in _ADMINS)
+        return mail.lower() in (email.lower() for email in cls.admins)
 
     @classmethod
     def get_subscriptions(cls, body):
@@ -55,12 +54,12 @@ class AdminHandler(InboundMailHandler):
     def get_subscription_msg(cls, to, report):
         """Returns EmailMessage for supplied recipient and report."""
         app_id = app_identity.get_application_id()
-        reply_to = 'PIF <noreply@%s.appspotmail.com>' % app_id
+        reply_to = '%s <noreply@%s.appspotmail.com>' % (cls.appname, app_id)
         fields = dict(
             sender=reply_to,
             to=to,
             reply_to=reply_to,
-            subject='[PIF] Admin confirmation - Your changes were saved',
+            subject='[%s] Admin confirmation - Your changes were saved' % cls.appname,
             body=report)
         return mail.EmailMessage(**fields)
 
