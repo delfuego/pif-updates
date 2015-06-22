@@ -1,10 +1,10 @@
 cron:
-# PIF team
-- description: Sends PIF team updates request email to all subscribers
-  url: /cron/update/pif
-  schedule: every mon 10:00
+# HHS IDEA Lab team
+- description: Sends IDEA Lab team updates request email to all subscribers
+  url: /cron/update/idea
+  schedule: every mon,thu 9:00
   timezone: America/New_York
-- description: Sends PIF team updates digest email to all subscribers
-  url: /cron/digest/pif
-  schedule: every mon 18:00
+- description: Sends IDEA Lab team updates digest email to all subscribers
+  url: /cron/digest/idea
+  schedule: every mon,thu 18:00
   timezone: America/New_York
