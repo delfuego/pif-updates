@@ -25,7 +25,7 @@ class AdminHandler(InboundMailHandler):
     def is_admin(cls, sender):
         """Return True if sender is an admin, otherwise return False."""
         name, mail = email.Utils.parseaddr(sender)
-        return mail in _ADMINS
+        return mail.lower() in (email.lower() for email in _ADMINS)
 
     @classmethod
     def get_subscriptions(cls, body):
