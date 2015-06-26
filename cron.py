@@ -72,6 +72,11 @@ class CronUpdateHandler(webapp2.RequestHandler):
 
 class CronDigestHandler(webapp2.RequestHandler):
 
+    with open('config.yaml', 'r') as f:
+        doc = yaml.load(f);
+    
+    appname = doc["appname"]
+
     @classmethod
     def get_digest_message(cls, team, digest, date, to):
         """Sends update reminder email to subscriber."""
